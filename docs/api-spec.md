@@ -163,3 +163,61 @@
 ## 7. 공통 응답 규약
 
 ### 인증 헤더
+
+- 헤더가 없거나 토큰이 만료되면 → 401 Unauthorized
+- 토큰은 유효하지만 남의 자원을 건드리면 → 403 Forbidden
+
+### 성공 응답 봉투
+```json
+{
+  "success": true,
+  "message": "...에 성공했습니다.",
+  "data": { }
+}
+```
+
+### 에러 응답 봉투
+```json
+{
+  "success": false,
+  "code": "FOODLOG_NOT_FOUND",
+  "message": "식단 기록을 찾을 수 없습니다.",
+  "data": null
+}
+```
+
+### 표준 에러 코드
+| HTTP 상태 | code | 상황 |
+|---|---|---|
+| 400 | VALIDATION_ERROR | 입력 검증 실패(칼로리 ≤ 0, 날짜 누락 등) |
+| 401 | INVALID_CREDENTIALS | 로그인 시 이메일/비밀번호 불일치 |
+| 401 | UNAUTHORIZED | 토큰 없음/만료 |
+| 403 | FORBIDDEN | 본인 데이터가 아님 |
+| 409 | DUPLICATE_EMAIL | 이미 가입된 이메일 |
+| 404 | CATEGORY_NOT_FOUND | 존재하지 않는 카테고리 |
+| 404 | FOODLOG_NOT_FOUND | 존재하지 않는 기록 |
+
+---
+
+## 8. 화면 흐름 및 API 매핑
+
+| 화면 | 사용자 행동 | 호출 API |
+|---|---|---|
+| ① 로그인 | 회원가입 | POST /api/auth/signup |
+| ① 로그인 | 로그인 → 토큰 저장 | POST /api/auth/login |
+| ② 기록 목록 | 이번 달 목록 로드 | GET /api/foodlogs?yearMonth=... |
+| ② 기록 목록 | 필터용 카테고리 드롭다운 | GET /api/categories |
+| ② 기록 목록 | 항목 삭제 | DELETE /api/foodlogs/{id} |
+| ③ 기록 등록 | 카테고리 선택지 로드 | GET /api/categories |
+| ③ 기록 등록 | 저장(신규) | POST /api/foodlogs |
+| ③ 기록 등록 | 저장(수정 시) | PUT /api/foodlogs/{id} |
+| ④ 월별 통계 | 이번 달 집계 로드 | GET /api/statistics/monthly?yearMonth=... |
+
+## 9. 개발 우선순위
+1. 인증 (signup, login)
+2. 카테고리 CRUD
+3. 식단 기록 CRUD
+4. 목록 필터/페이징
+5. 통계
+6. 프론트 연동
+7. (도전) goals/search/export
