@@ -48,4 +48,10 @@ public class Category {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
+    public void update(String name, MealType mealType, String foodGroup) {
+        this.name = name;
+        this.mealType = mealType;
+        this.foodGroup = foodGroup;
+    }
 }
